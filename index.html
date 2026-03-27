@@ -1710,15 +1710,10 @@ function renderHomeScreen() {
 //  REVIEW SCREEN
 // ================================================================
 function renderReviewScreen() {
-  const app = document.getElementById('app');
-  const existing = app.querySelector('#review-screen');
-  
   const card = currentCard();
   const total = STATE.reviewQueue.length;
   const remaining = total - STATE.reviewIndex;
 
-  // Remove old review screen if re-rendering
-  if (existing) existing.remove();
   // Remove old nav
 
   // Build review screen
@@ -1754,11 +1749,11 @@ function renderReviewScreen() {
   // Progress bar
   const progress = el('div', { className: 'review-progress' });
   progress.innerHTML = `
+    <button class="header-btn" onclick="navigateTo('home')" style="margin-right:8px;font-size:20px;">←</button>
     <div class="review-progress-bar">
       <div class="review-progress-fill" style="width:${total > 0 ? ((STATE.reviewIndex / total) * 100) : 0}%"></div>
     </div>
     <div class="review-count">${remaining} left</div>
-    <button class="header-btn" style="margin-left:4px;" onclick="navigateTo('home')">✕</button>
   `;
   screen.appendChild(progress);
 
@@ -1771,7 +1766,7 @@ function renderReviewScreen() {
     onClick: () => {
       if (!STATE.cardRevealed) {
         STATE.cardRevealed = true;
-        renderReviewScreen();
+        navigateTo('review');
       }
     }
   });
