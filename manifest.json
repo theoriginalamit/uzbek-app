@@ -1,0 +1,32 @@
+{
+  "name": "O'zbek — FSRS Language App",
+  "short_name": "O'zbek",
+  "description": "Evidence-based Uzbek language learning with FSRS spaced repetition",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#0c0f1a",
+  "theme_color": "#0c0f1a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/11849/11849568.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/11849/11849568.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "categories": ["education", "utilities"],
+  "shortcuts": [
+    {
+      "name": "Review Cards",
+      "url": "./index.html",
+      "description": "Start your daily review"
+    }
+  ]
+}

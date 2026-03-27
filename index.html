@@ -1,0 +1,2357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#0c0f1a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="O'zbek">
+<link rel="manifest" href="manifest.json">
+<title>O'zbek — FSRS Language App</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Noto+Sans:wght@300;400;500;600&family=Noto+Sans+Cyrillic:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+/* ====================================================
+   DESIGN SYSTEM — "Samarkand Dark"
+   Deep lapis lazuli base, warm gold accents,
+   terracotta highlights. Uzbek geometric motifs.
+   ==================================================== */
+:root {
+  --bg:        #0c0f1a;
+  --bg2:       #131826;
+  --bg3:       #1a2035;
+  --border:    #2a3350;
+  --border2:   #3a4570;
+  --gold:      #c9a84c;
+  --gold2:     #e8c86a;
+  --terra:     #c05a3a;
+  --terra2:    #e07050;
+  --teal:      #4a9e8e;
+  --teal2:     #6abcac;
+  --text:      #e8e4d8;
+  --text2:     #a8a49a;
+  --text3:     #686460;
+  --success:   #5a9e6a;
+  --danger:    #9e4a4a;
+  --font-d:    'Crimson Pro', Georgia, serif;
+  --font-b:    'Noto Sans', sans-serif;
+  --r:         12px;
+  --r2:        8px;
+  --shadow:    0 4px 24px rgba(0,0,0,0.5);
+  --shadow2:   0 2px 8px rgba(0,0,0,0.3);
+}
+
+/* RESET */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; overflow: hidden; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* GEOMETRIC BACKGROUND PATTERN */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image: 
+    repeating-linear-gradient(45deg, transparent, transparent 60px, rgba(201,168,76,0.02) 60px, rgba(201,168,76,0.02) 61px),
+    repeating-linear-gradient(-45deg, transparent, transparent 60px, rgba(201,168,76,0.02) 60px, rgba(201,168,76,0.02) 61px);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* LAYOUT */
+#app { 
+  position: relative; 
+  height: 100vh; 
+  height: 100dvh;
+  display: flex; 
+  flex-direction: column; 
+  z-index: 1;
+  max-width: 480px;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+/* SCREENS */
+.screen {
+  display: none;
+  flex-direction: column;
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0;
+}
+.screen.active { display: flex; }
+
+/* SCROLLABLE CONTENT */
+.scroll-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  padding-bottom: 80px;
+}
+.scroll-content::-webkit-scrollbar { width: 3px; }
+.scroll-content::-webkit-scrollbar-track { background: transparent; }
+.scroll-content::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* HEADER */
+.header {
+  padding: 16px 16px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid var(--border);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  flex-shrink: 0;
+}
+.header-title {
+  font-family: var(--font-d);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+}
+.header-subtitle {
+  font-size: 12px;
+  color: var(--text2);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.header-btn {
+  background: none;
+  border: none;
+  color: var(--text2);
+  cursor: pointer;
+  padding: 6px;
+  border-radius: var(--r2);
+  font-size: 18px;
+  transition: color 0.2s;
+}
+.header-btn:hover { color: var(--gold); }
+
+/* BOTTOM NAV */
+.bottom-nav {
+  display: flex;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.nav-btn {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px 10px;
+  background: none;
+  border: none;
+  color: var(--text3);
+  cursor: pointer;
+  font-family: var(--font-b);
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  transition: color 0.2s;
+  gap: 3px;
+}
+.nav-btn .icon { font-size: 20px; line-height: 1; }
+.nav-btn.active { color: var(--gold); }
+.nav-btn:hover { color: var(--text); }
+
+/* CARDS & CONTAINERS */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 16px;
+  margin-bottom: 12px;
+}
+.card-gold {
+  border-color: rgba(201,168,76,0.3);
+  background: linear-gradient(135deg, var(--bg2), rgba(201,168,76,0.05));
+}
+.card-terra {
+  border-color: rgba(192,90,58,0.3);
+  background: linear-gradient(135deg, var(--bg2), rgba(192,90,58,0.05));
+}
+
+/* BUTTONS */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 20px;
+  border-radius: var(--r2);
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-b);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+.btn-primary {
+  background: var(--gold);
+  color: var(--bg);
+}
+.btn-primary:hover { background: var(--gold2); transform: translateY(-1px); }
+.btn-secondary {
+  background: var(--bg3);
+  color: var(--text);
+  border: 1px solid var(--border2);
+}
+.btn-secondary:hover { border-color: var(--gold); color: var(--gold); }
+.btn-danger {
+  background: var(--danger);
+  color: var(--text);
+}
+.btn-full { width: 100%; }
+
+/* REVIEW RATING BUTTONS */
+.rating-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr 1fr;
+  gap: 8px;
+  margin-top: 16px;
+}
+.rating-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 4px;
+  border-radius: var(--r2);
+  border: 1px solid;
+  cursor: pointer;
+  font-family: var(--font-b);
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  transition: all 0.15s;
+  gap: 2px;
+}
+.rating-btn .interval { font-size: 10px; opacity: 0.7; }
+.rating-btn:hover { transform: translateY(-2px); filter: brightness(1.2); }
+.rating-btn:active { transform: translateY(0); }
+
+.btn-again { 
+  background: rgba(158,74,74,0.15); 
+  border-color: var(--danger); 
+  color: #ff8888; 
+}
+.btn-hard { 
+  background: rgba(192,90,58,0.15); 
+  border-color: var(--terra); 
+  color: var(--terra2); 
+}
+.btn-good { 
+  background: rgba(74,158,142,0.15); 
+  border-color: var(--teal); 
+  color: var(--teal2); 
+}
+.btn-easy { 
+  background: rgba(90,158,106,0.15); 
+  border-color: var(--success); 
+  color: #88dd88; 
+}
+
+/* FLASHCARD */
+.flashcard-wrap {
+  perspective: 1000px;
+  margin: 8px 16px 0;
+  flex-shrink: 0;
+}
+.flashcard {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  padding: 32px 24px;
+  min-height: 200px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s;
+  position: relative;
+  overflow: hidden;
+}
+.flashcard::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+.flashcard.revealed::before { opacity: 1; }
+.flashcard:hover { border-color: var(--border2); }
+
+.card-node-badge {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.card-type-badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 10px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: var(--bg3);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.card-front-text {
+  font-family: var(--font-d);
+  font-size: 28px;
+  color: var(--text);
+  line-height: 1.3;
+  margin-bottom: 8px;
+}
+.card-front-ru {
+  font-size: 14px;
+  color: var(--text2);
+  font-style: italic;
+}
+.card-reveal-hint {
+  margin-top: 20px;
+  font-size: 11px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.card-back {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid var(--border);
+  animation: fadeIn 0.3s ease;
+}
+.card-back.visible { display: flex; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+.card-uzbek {
+  font-family: var(--font-d);
+  font-size: 36px;
+  font-weight: 600;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  line-height: 1.2;
+  margin-bottom: 4px;
+}
+.card-cyrillic {
+  font-size: 20px;
+  color: var(--text2);
+  margin-bottom: 8px;
+  font-style: italic;
+}
+.card-notes {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.5;
+  text-align: center;
+  margin-top: 8px;
+  padding: 8px 12px;
+  background: var(--bg3);
+  border-radius: var(--r2);
+  max-width: 100%;
+}
+
+.tts-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text2);
+  padding: 5px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: all 0.2s;
+}
+.tts-btn:hover { border-color: var(--gold); color: var(--gold); }
+.tts-btn.speaking { border-color: var(--teal); color: var(--teal2); }
+
+/* FEYNMAN PANEL */
+.feynman-panel {
+  display: none;
+  background: linear-gradient(135deg, var(--bg2), rgba(192,90,58,0.08));
+  border: 1px solid rgba(192,90,58,0.4);
+  border-radius: var(--r);
+  padding: 16px;
+  margin: 12px 16px 0;
+  animation: fadeIn 0.3s ease;
+}
+.feynman-panel.visible { display: block; }
+.feynman-header {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--terra2);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.feynman-content {
+  font-size: 14px;
+  color: var(--text);
+  line-height: 1.6;
+}
+.feynman-loading {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text2);
+  font-size: 13px;
+}
+
+/* DOTS LOADING ANIMATION */
+.dot-flashing {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  animation: dotFlashing 1s infinite linear alternate;
+}
+.dot-flashing::before, .dot-flashing::after {
+  content: '';
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+.dot-flashing::before { left: -12px; animation: dotFlashing 1s infinite alternate; animation-delay: 0s; }
+.dot-flashing::after { left: 12px; animation: dotFlashing 1s infinite alternate; animation-delay: 1s; }
+@keyframes dotFlashing { 0% { background-color: var(--gold); } 100% { background-color: rgba(201,168,76,0.2); } }
+.dot-wrap { position: relative; display: inline-block; width: 32px; }
+
+/* PROGRESS BAR */
+.progress-bar-wrap {
+  background: var(--bg3);
+  border-radius: 4px;
+  height: 4px;
+  overflow: hidden;
+  margin: 8px 0;
+}
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--terra2));
+  border-radius: 4px;
+  transition: width 0.5s ease;
+}
+
+/* STATS GRID */
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+.stat-box {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 14px;
+  text-align: center;
+}
+.stat-number {
+  font-family: var(--font-d);
+  font-size: 32px;
+  color: var(--gold);
+  line-height: 1;
+  margin-bottom: 4px;
+}
+.stat-label {
+  font-size: 11px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+/* NODE TREE */
+.node-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r);
+  margin-bottom: 8px;
+  transition: all 0.2s;
+  position: relative;
+}
+.node-item.locked { opacity: 0.5; }
+.node-item.current { 
+  border-color: rgba(201,168,76,0.5); 
+  background: linear-gradient(135deg, var(--bg2), rgba(201,168,76,0.05));
+}
+.node-item.completed { border-color: rgba(90,158,106,0.4); }
+
+.node-icon {
+  font-size: 28px;
+  flex-shrink: 0;
+  line-height: 1;
+  margin-top: 2px;
+}
+.node-info { flex: 1; }
+.node-name {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 2px;
+}
+.node-desc {
+  font-size: 12px;
+  color: var(--text2);
+  line-height: 1.4;
+  margin-bottom: 6px;
+}
+.node-progress-text {
+  font-size: 11px;
+  color: var(--text3);
+}
+.node-lock {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  font-size: 14px;
+  color: var(--text3);
+}
+
+/* CONVERSATION SCREEN */
+.chat-messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 80px;
+}
+.chat-messages::-webkit-scrollbar { width: 3px; }
+.chat-messages::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+.msg {
+  max-width: 85%;
+  padding: 12px 14px;
+  border-radius: var(--r);
+  font-size: 14px;
+  line-height: 1.5;
+  animation: fadeIn 0.3s ease;
+}
+.msg-ai {
+  align-self: flex-start;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  border-bottom-left-radius: 4px;
+}
+.msg-user {
+  align-self: flex-end;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  border-bottom-right-radius: 4px;
+}
+.msg-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 4px;
+  opacity: 0.6;
+}
+
+.chat-input-wrap {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  padding: 8px 12px 12px;
+  background: var(--bg2);
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  z-index: 20;
+}
+.chat-input {
+  flex: 1;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 14px;
+  padding: 10px 12px;
+  resize: none;
+  outline: none;
+  transition: border-color 0.2s;
+  height: 42px;
+  line-height: 1.4;
+}
+.chat-input:focus { border-color: var(--gold); }
+.chat-send-btn {
+  background: var(--gold);
+  color: var(--bg);
+  border: none;
+  border-radius: var(--r2);
+  width: 42px;
+  height: 42px;
+  font-size: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.2s;
+  display: flex; align-items: center; justify-content: center;
+}
+.chat-send-btn:hover { background: var(--gold2); }
+.chat-send-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* SETTINGS */
+.settings-group {
+  margin-bottom: 16px;
+}
+.settings-label {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin-bottom: 8px;
+  padding: 0 4px;
+}
+.settings-input {
+  width: 100%;
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  border-radius: var(--r2);
+  color: var(--text);
+  font-family: var(--font-b);
+  font-size: 14px;
+  padding: 10px 12px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.settings-input:focus { border-color: var(--gold); }
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 14px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  margin-bottom: 6px;
+}
+.settings-row-label { font-size: 14px; color: var(--text); }
+.settings-row-sub { font-size: 12px; color: var(--text2); margin-top: 2px; }
+.toggle {
+  width: 44px; height: 24px;
+  background: var(--border2);
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.2s;
+  flex-shrink: 0;
+}
+.toggle.on { background: var(--gold); }
+.toggle::after {
+  content: '';
+  position: absolute;
+  top: 2px; left: 2px;
+  width: 20px; height: 20px;
+  background: white;
+  border-radius: 50%;
+  transition: transform 0.2s;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.3);
+}
+.toggle.on::after { transform: translateX(20px); }
+
+/* HEATMAP */
+.heatmap-grid {
+  display: grid;
+  grid-template-columns: repeat(13, 1fr);
+  gap: 3px;
+  margin-top: 8px;
+}
+.heatmap-day {
+  aspect-ratio: 1;
+  border-radius: 2px;
+  background: var(--bg3);
+  transition: background 0.2s;
+}
+.heatmap-day.lvl1 { background: rgba(201,168,76,0.3); }
+.heatmap-day.lvl2 { background: rgba(201,168,76,0.55); }
+.heatmap-day.lvl3 { background: rgba(201,168,76,0.8); }
+.heatmap-day.lvl4 { background: var(--gold); }
+
+/* PRONUNCIATION SCREEN */
+.pron-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.pron-table th {
+  text-align: left;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text3);
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+}
+.pron-table td {
+  padding: 8px;
+  border-bottom: 1px solid rgba(42,51,80,0.5);
+  font-size: 14px;
+  vertical-align: top;
+}
+.pron-table tr:hover td { background: rgba(255,255,255,0.02); }
+.pron-letter {
+  font-family: var(--font-d);
+  font-size: 22px;
+  color: var(--gold);
+  font-weight: 600;
+  min-width: 36px;
+}
+.pron-en { color: var(--text2); font-size: 13px; }
+.pron-example { color: var(--teal2); font-style: italic; }
+
+/* EMPTY STATE */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 48px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.empty-icon { font-size: 48px; opacity: 0.5; }
+.empty-title { font-family: var(--font-d); font-size: 22px; color: var(--text); }
+.empty-sub { font-size: 14px; color: var(--text2); line-height: 1.5; }
+
+/* REVIEW PROGRESS BAR (top of review screen) */
+.review-progress {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 16px;
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.review-progress-bar {
+  flex: 1;
+  height: 3px;
+  background: var(--bg3);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.review-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--gold), var(--terra2));
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+.review-count {
+  font-size: 12px;
+  color: var(--text2);
+  min-width: 60px;
+  text-align: right;
+}
+
+/* REVIEW ACTIONS */
+.review-actions {
+  padding: 12px 16px 16px;
+  flex-shrink: 0;
+}
+
+/* TAGS */
+.tag {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+.tag-new { background: rgba(74,158,142,0.15); color: var(--teal2); border: 1px solid rgba(74,158,142,0.3); }
+.tag-review { background: rgba(201,168,76,0.15); color: var(--gold); border: 1px solid rgba(201,168,76,0.3); }
+.tag-relearn { background: rgba(158,74,74,0.15); color: #ff8888; border: 1px solid rgba(158,74,74,0.3); }
+
+/* TOAST */
+.toast {
+  position: fixed;
+  bottom: 80px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--bg3);
+  border: 1px solid var(--border2);
+  color: var(--text);
+  padding: 10px 20px;
+  border-radius: 24px;
+  font-size: 13px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 100;
+  white-space: nowrap;
+  max-width: 90%;
+  text-align: center;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* SECTION TITLE */
+.section-title {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--text3);
+  margin: 16px 0 8px;
+}
+
+/* DIVIDER */
+.divider {
+  height: 1px;
+  background: var(--border);
+  margin: 12px 0;
+}
+
+/* WELCOME SCREEN */
+.welcome-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 16px;
+}
+.welcome-logo {
+  font-family: var(--font-d);
+  font-size: 64px;
+  line-height: 1;
+  color: var(--gold);
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+.welcome-sub {
+  font-size: 13px;
+  color: var(--text2);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  margin-bottom: 24px;
+}
+.welcome-desc {
+  font-size: 15px;
+  color: var(--text2);
+  line-height: 1.6;
+  max-width: 320px;
+}
+
+/* SETUP FORM */
+.setup-field { margin-bottom: 16px; }
+.setup-field label {
+  display: block;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text2);
+  margin-bottom: 6px;
+}
+.setup-note {
+  font-size: 12px;
+  color: var(--text3);
+  line-height: 1.5;
+  margin-top: 6px;
+}
+
+/* SCRIPT TOGGLE */
+.script-toggle {
+  display: flex;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: var(--r2);
+  padding: 2px;
+  gap: 2px;
+}
+.script-btn {
+  flex: 1;
+  padding: 6px;
+  border: none;
+  border-radius: 6px;
+  background: none;
+  color: var(--text2);
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-b);
+}
+.script-btn.active {
+  background: var(--bg);
+  color: var(--gold);
+  border: 1px solid var(--border2);
+}
+
+/* REVIEW DONE SCREEN */
+.done-screen {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1;
+  padding: 32px 24px;
+  text-align: center;
+  gap: 12px;
+}
+.done-icon { font-size: 56px; }
+.done-title { font-family: var(--font-d); font-size: 28px; color: var(--text); }
+.done-sub { font-size: 15px; color: var(--text2); line-height: 1.5; }
+
+/* RESPONSIVE TWEAKS */
+@media (min-width: 480px) {
+  body { background: #060810; }
+  #app {
+    border-left: 1px solid var(--border);
+    border-right: 1px solid var(--border);
+  }
+}
+</style>
+</head>
+
+<body>
+<div id="app">
+  <!-- SCREENS INJECTED BY JS -->
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ================================================================
+//  SEED DECK (Embedded from seedDeck.js extraction)
+// ================================================================
+</script>
+<script src="seedDeck.js"></script>
+
+<script>
+// ================================================================
+//  FSRS-5 ALGORITHM
+//  Based on the open-source Free Spaced Repetition Scheduler
+// ================================================================
+const FSRS = (() => {
+  const W = [0.4072,1.1829,3.1262,15.4722,7.2102,0.5316,1.0651,0.0589,1.5330,0.1400,0.9997,1.9395,0.1100,0.2900,2.2700,0.2500,2.9898];
+  const REQUEST_RETENTION = 0.90;
+  const MAX_INTERVAL = 36500;
+  const AGAIN=1, HARD=2, GOOD=3, EASY=4;
+
+  function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+  function initStability(rating) {
+    return clamp(W[rating - 1], 0.1, 100);
+  }
+
+  function initDifficulty(rating) {
+    return clamp(W[4] - Math.exp(W[5] * (rating - 1)) + 1, 1, 10);
+  }
+
+  function retrievability(elapsedDays, stability) {
+    return Math.pow(1 + elapsedDays / (9 * stability), -1);
+  }
+
+  function nextInterval(stability) {
+    const days = 9 * stability * (1 / REQUEST_RETENTION - 1);
+    return clamp(Math.round(days), 1, MAX_INTERVAL);
+  }
+
+  function nextDifficulty(d, rating) {
+    const delta = -W[6] * (rating - 3);
+    const mean = d + delta * (10 - d) / 9;
+    return clamp(mean, 1, 10);
+  }
+
+  function recallStability(d, s, r, rating) {
+    const hp = rating === HARD ? W[15] : 1;
+    const eb = rating === EASY ? W[16] : 1;
+    return s * (
+      Math.exp(W[8]) * (11 - d) *
+      Math.pow(s, -W[9]) *
+      (Math.exp((1 - r) * W[10]) - 1) *
+      hp * eb
+    );
+  }
+
+  function forgetStability(d, s, r) {
+    return W[11] * Math.pow(d, -W[12]) * (Math.pow(s + 1, W[13]) - 1) * Math.exp((1 - r) * W[14]);
+  }
+
+  function schedule(card, rating, now = new Date()) {
+    const c = JSON.parse(JSON.stringify(card));
+    const elapsed = c.lastReview ? Math.max(0, (now - new Date(c.lastReview)) / 86400000) : 0;
+
+    if (c.state === 'new') {
+      c.difficulty = initDifficulty(rating);
+      c.stability = initStability(rating);
+      if (rating === AGAIN) {
+        c.state = 'learning';
+        c.due = new Date(now.getTime() + 1 * 60000); // 1 min
+      } else if (rating === HARD) {
+        c.state = 'learning';
+        c.due = new Date(now.getTime() + 5 * 60000); // 5 min
+      } else if (rating === GOOD) {
+        c.state = 'learning';
+        c.due = new Date(now.getTime() + 10 * 60000); // 10 min
+      } else { // EASY
+        c.state = 'review';
+        c.scheduledDays = nextInterval(c.stability);
+        c.due = new Date(now.getTime() + c.scheduledDays * 86400000);
+      }
+    } else if (c.state === 'learning' || c.state === 'relearning') {
+      if (rating === AGAIN) {
+        c.due = new Date(now.getTime() + 1 * 60000);
+      } else if (rating === HARD) {
+        c.due = new Date(now.getTime() + 5 * 60000);
+      } else {
+        c.state = 'review';
+        if (rating === GOOD) c.stability = c.stability || initStability(GOOD);
+        if (rating === EASY) c.stability = Math.max(c.stability * 2, initStability(EASY));
+        c.scheduledDays = nextInterval(c.stability);
+        c.due = new Date(now.getTime() + c.scheduledDays * 86400000);
+      }
+    } else { // review
+      const r = retrievability(elapsed, c.stability);
+      c.difficulty = nextDifficulty(c.difficulty, rating);
+      if (rating === AGAIN) {
+        c.lapses = (c.lapses || 0) + 1;
+        c.stability = forgetStability(c.difficulty, c.stability, r);
+        c.state = 'relearning';
+        c.due = new Date(now.getTime() + 10 * 60000);
+      } else {
+        c.stability = recallStability(c.difficulty, c.stability, r, rating);
+        c.state = 'review';
+        c.scheduledDays = nextInterval(c.stability);
+        c.due = new Date(now.getTime() + c.scheduledDays * 86400000);
+      }
+    }
+    c.reps = (c.reps || 0) + 1;
+    c.elapsedDays = elapsed;
+    c.lastReview = now.toISOString();
+    c.due = c.due.toISOString();
+    return c;
+  }
+
+  function previewIntervals(card) {
+    const now = new Date();
+    return [AGAIN, HARD, GOOD, EASY].map(r => {
+      const sc = schedule(card, r, now);
+      const due = new Date(sc.due);
+      const diffMs = due - now;
+      const diffMins = diffMs / 60000;
+      const diffDays = diffMs / 86400000;
+      let label;
+      if (diffMins < 2) label = '1m';
+      else if (diffMins < 60) label = Math.round(diffMins) + 'm';
+      else if (diffDays < 1) label = Math.round(diffMins / 60) + 'h';
+      else label = Math.round(diffDays) + 'd';
+      return label;
+    });
+  }
+
+  function isMature(card) {
+    return card.state === 'review' && (card.scheduledDays || 0) >= 21;
+  }
+
+  return { schedule, previewIntervals, isMature, AGAIN, HARD, GOOD, EASY };
+})();
+
+// ================================================================
+//  STATE
+// ================================================================
+let STATE = {
+  screen: 'home',
+  apiKey: '',
+  showCyrillic: false,
+  cards: {},          // id -> card object
+  reviewQueue: [],    // ids due today
+  reviewIndex: 0,
+  cardRevealed: false,
+  chatHistory: [],    // [{role, content}]
+  conversationNodeId: null,
+  reviewedToday: 0,
+  sessionCorrect: 0,
+  sessionTotal: 0,
+};
+
+// ================================================================
+//  STORAGE (localStorage for simplicity + JSON export)
+// ================================================================
+function save() {
+  try {
+    localStorage.setItem('uzbek_state', JSON.stringify({
+      apiKey: STATE.apiKey,
+      showCyrillic: STATE.showCyrillic,
+      cards: STATE.cards,
+      reviewedToday: STATE.reviewedToday,
+      lastReviewDate: STATE.lastReviewDate || new Date().toDateString(),
+      reviewHistory: STATE.reviewHistory || {},
+    }));
+  } catch(e) { console.error('Save failed', e); }
+}
+
+function load() {
+  try {
+    const raw = localStorage.getItem('uzbek_state');
+    if (!raw) return false;
+    const data = JSON.parse(raw);
+    STATE.apiKey = data.apiKey || '';
+    STATE.showCyrillic = data.showCyrillic || false;
+    STATE.cards = data.cards || {};
+    STATE.reviewedToday = data.reviewedToday || 0;
+    STATE.lastReviewDate = data.lastReviewDate || '';
+    STATE.reviewHistory = data.reviewHistory || {};
+    // Reset daily counter if new day
+    if (STATE.lastReviewDate !== new Date().toDateString()) {
+      STATE.reviewedToday = 0;
+      STATE.lastReviewDate = new Date().toDateString();
+    }
+    return true;
+  } catch(e) { return false; }
+}
+
+function initCards() {
+  // Initialise any cards not yet in STATE.cards
+  SEED_DECK.forEach(cd => {
+    if (!STATE.cards[cd.id]) {
+      STATE.cards[cd.id] = {
+        ...cd,
+        state: 'new',
+        due: new Date().toISOString(),
+        stability: 0,
+        difficulty: 5,
+        elapsedDays: 0,
+        scheduledDays: 0,
+        reps: 0,
+        lapses: 0,
+        lastReview: null,
+        consecutiveFailures: 0,
+      };
+    }
+  });
+  save();
+}
+
+// ================================================================
+//  NODE UNLOCK LOGIC
+// ================================================================
+function getMatureCount() {
+  return Object.values(STATE.cards).filter(c => FSRS.isMature(c)).length;
+}
+
+function getNodeStats(nodeId) {
+  const nodecards = Object.values(STATE.cards).filter(c => c.nodeId === nodeId);
+  const mature = nodecards.filter(c => FSRS.isMature(c)).length;
+  const reviewed = nodecards.filter(c => c.reps > 0).length;
+  return { total: nodecards.length, reviewed, mature };
+}
+
+function isNodeUnlocked(nodeId) {
+  if (nodeId <= 2) return true;
+  const node = NODES.find(n => n.id === nodeId);
+  if (!node) return false;
+  return getMatureCount() >= node.requiredMature;
+}
+
+function getCurrentNode() {
+  for (let i = NODES.length - 1; i >= 0; i--) {
+    if (isNodeUnlocked(NODES[i].id)) return NODES[i].id;
+  }
+  return 1;
+}
+
+// ================================================================
+//  REVIEW QUEUE
+// ================================================================
+function buildQueue() {
+  const now = new Date();
+  const unlockedNodeIds = NODES.filter(n => isNodeUnlocked(n.id)).map(n => n.id);
+  
+  // Get due cards from unlocked nodes, sorted: relearning > learning > due reviews > new
+  const allDue = Object.values(STATE.cards)
+    .filter(c => {
+      if (!unlockedNodeIds.includes(c.nodeId)) return false;
+      // Node 1 pronunciation cards are reference only
+      if (c.nodeId === 1 && c.type === 'pronunciation') return false;
+      if (c.state === 'new') return true;
+      return new Date(c.due) <= now;
+    });
+
+  // Sort: relearning first, then learning, then reviews, then new
+  const order = { relearning: 0, learning: 1, review: 2, new: 3 };
+  allDue.sort((a, b) => (order[a.state] || 4) - (order[b.state] || 4));
+
+  // Cap new cards at 20 per session
+  let newCount = 0;
+  STATE.reviewQueue = allDue.filter(c => {
+    if (c.state === 'new') {
+      if (newCount >= 20) return false;
+      newCount++;
+    }
+    return true;
+  }).map(c => c.id);
+
+  STATE.reviewIndex = 0;
+  STATE.sessionCorrect = 0;
+  STATE.sessionTotal = 0;
+  STATE.cardRevealed = false;
+}
+
+function currentCard() {
+  const id = STATE.reviewQueue[STATE.reviewIndex];
+  return id ? STATE.cards[id] : null;
+}
+
+function submitRating(rating) {
+  const card = currentCard();
+  if (!card) return;
+  
+  const wasCorrect = rating >= 3;
+  
+  // Consecutive failures tracking (for Feynman trigger)
+  if (rating === 1) {
+    STATE.cards[card.id].consecutiveFailures = (card.consecutiveFailures || 0) + 1;
+  } else {
+    STATE.cards[card.id].consecutiveFailures = 0;
+  }
+  
+  // FSRS schedule
+  const updated = FSRS.schedule(STATE.cards[card.id], rating);
+  STATE.cards[card.id] = updated;
+  
+  STATE.sessionTotal++;
+  if (wasCorrect) STATE.sessionCorrect++;
+  STATE.reviewedToday++;
+  STATE.lastReviewDate = new Date().toDateString();
+  
+  // Track review history for heatmap
+  const today = new Date().toISOString().split('T')[0];
+  if (!STATE.reviewHistory) STATE.reviewHistory = {};
+  STATE.reviewHistory[today] = (STATE.reviewHistory[today] || 0) + 1;
+  
+  save();
+  
+  STATE.reviewIndex++;
+  STATE.cardRevealed = false;
+  
+  navigateTo('review');
+}
+
+// ================================================================
+//  GEMINI API
+// ================================================================
+async function callGemini(systemPrompt, userMessage, history = []) {
+  if (!STATE.apiKey) {
+    return 'Please add your Gemini API key in Settings to use AI features.';
+  }
+  
+  const msgs = [
+    ...(systemPrompt ? [{ role: 'user', parts: [{ text: systemPrompt }] }, { role: 'model', parts: [{ text: 'Understood.' }] }] : []),
+    ...history.map(m => ({ role: m.role === 'user' ? 'user' : 'model', parts: [{ text: m.content }] })),
+    { role: 'user', parts: [{ text: userMessage }] }
+  ];
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${STATE.apiKey}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: msgs, generationConfig: { maxOutputTokens: 800, temperature: 0.7 } })
+      }
+    );
+    const data = await res.json();
+    if (data.error) return `Error: ${data.error.message}`;
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || 'No response received.';
+  } catch(e) {
+    return `Network error: ${e.message}`;
+  }
+}
+
+async function getFeynmanExplanation(card) {
+  const prompt = `You are a linguistics expert helping someone learn Uzbek. The student has failed the same flashcard 3 times in a row.
+
+Card details:
+- English: "${card.front}"
+- Russian: "${card.frontRu}"  
+- Uzbek: "${card.back}"
+- Notes: "${card.notes || 'none'}"
+
+Give a clear, memorable explanation in English (2-4 sentences) of:
+1. Why this word/phrase sounds or looks the way it does
+2. A memory hook or connection to Russian/English that will make it stick
+3. Any important usage notes
+
+Be practical and direct. No fluff.`;
+
+  return await callGemini('', prompt);
+}
+
+async function generateCards(nodeId, topic) {
+  const node = NODES.find(n => n.id === nodeId);
+  const prompt = `Generate 8 Uzbek flashcards about: ${topic} (for skill tree node: ${node?.name}).
+
+Rules:
+- One atomic concept per card
+- Return ONLY valid JSON array, no markdown, no explanation
+- Each card: {"front":"English","frontRu":"Russian","back":"Uzbek Latin","backCyr":"Uzbek Cyrillic","notes":"brief note"}
+
+The Uzbek must be accurate modern Uzbek Latin script. Focus on practical, conversational vocabulary.`;
+
+  const response = await callGemini('', prompt);
+  try {
+    const clean = response.replace(/```json|```/g, '').trim();
+    const arr = JSON.parse(clean);
+    return arr.map((item, i) => ({
+      id: `gen_${nodeId}_${Date.now()}_${i}`,
+      nodeId,
+      type: 'vocabulary',
+      ...item,
+      state: 'new',
+      due: new Date().toISOString(),
+      stability: 0,
+      difficulty: 5,
+      elapsedDays: 0,
+      scheduledDays: 0,
+      reps: 0,
+      lapses: 0,
+      lastReview: null,
+      consecutiveFailures: 0,
+    }));
+  } catch(e) {
+    return null;
+  }
+}
+
+// ================================================================
+//  TTS
+// ================================================================
+function speak(text) {
+  if (!window.speechSynthesis) return;
+  speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  // Try Uzbek, fall back to Russian (closest available)
+  const voices = speechSynthesis.getVoices();
+  const uzVoice = voices.find(v => v.lang.startsWith('uz'));
+  const ruVoice = voices.find(v => v.lang.startsWith('ru'));
+  if (uzVoice) utt.voice = uzVoice;
+  else if (ruVoice) utt.voice = ruVoice;
+  utt.rate = 0.85;
+  utt.pitch = 1;
+  speechSynthesis.speak(utt);
+}
+
+// ================================================================
+//  EXPORT / IMPORT
+// ================================================================
+function exportData() {
+  const data = {
+    version: 1,
+    exported: new Date().toISOString(),
+    cards: STATE.cards,
+    reviewHistory: STATE.reviewHistory || {},
+  };
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `uzbek_backup_${new Date().toISOString().split('T')[0]}.json`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('Backup exported ✓');
+}
+
+function importData(file) {
+  const reader = new FileReader();
+  reader.onload = e => {
+    try {
+      const data = JSON.parse(e.target.result);
+      if (data.cards) {
+        STATE.cards = data.cards;
+        if (data.reviewHistory) STATE.reviewHistory = data.reviewHistory;
+        save();
+        showToast('Data restored ✓');
+        navigateTo('home');
+      }
+    } catch(err) {
+      showToast('Import failed — invalid file');
+    }
+  };
+  reader.readAsText(file);
+}
+
+// ================================================================
+//  UI UTILITIES
+// ================================================================
+function showToast(msg, duration = 2500) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), duration);
+}
+
+function el(tag, attrs = {}, ...children) {
+  const e = document.createElement(tag);
+  Object.entries(attrs).forEach(([k, v]) => {
+    if (k === 'className') e.className = v;
+    else if (k === 'style') Object.assign(e.style, v);
+    else if (k.startsWith('on')) e.addEventListener(k.slice(2).toLowerCase(), v);
+    else e.setAttribute(k, v);
+  });
+  children.forEach(c => {
+    if (c == null) return;
+    e.appendChild(typeof c === 'string' ? document.createTextNode(c) : c);
+  });
+  return e;
+}
+
+function html(str) {
+  const d = document.createElement('div');
+  d.innerHTML = str;
+  return d.firstChild;
+}
+
+// ================================================================
+//  NAVIGATION
+// ================================================================
+function navigateTo(screen) {
+  if (STATE.screen !== screen) {
+    STATE.navHistory = STATE.navHistory || [];
+    STATE.navHistory.push(STATE.screen);
+    history.pushState({ screen }, '');
+  }
+  STATE.screen = screen;
+  render();
+}
+
+window.addEventListener('popstate', () => {
+  const hist = STATE.navHistory || [];
+  const prev = hist.length > 0 ? hist.pop() : 'home';
+  STATE.screen = prev;
+  render();
+});
+
+function render() {
+  const app = document.getElementById('app');
+  
+  // Setup screen
+  if (!STATE.apiKey && !STATE._setupDone) {
+    app.innerHTML = '';
+    app.appendChild(renderSetupScreen());
+    return;
+  }
+
+  // Main app with nav
+  app.innerHTML = '';
+  
+  const screens = {
+    home: renderHomeScreen,
+    review: renderReviewScreen,
+    tree: renderTreeScreen,
+    convo: renderConvoScreen,
+    settings: renderSettingsScreen,
+  };
+
+  const screenEl = screens[STATE.screen] ? screens[STATE.screen]() : renderHomeScreen();
+  app.appendChild(screenEl);
+  app.appendChild(renderBottomNav());
+}
+
+function renderBottomNav() {
+  const tabs = [
+    { id: 'home', icon: '🏠', label: 'Home' },
+    { id: 'review', icon: '⚡', label: 'Review' },
+    { id: 'tree', icon: '🌳', label: 'Nodes' },
+    { id: 'convo', icon: '💬', label: 'Talk' },
+    { id: 'settings', icon: '⚙️', label: 'Settings' },
+  ];
+  const nav = el('div', { className: 'bottom-nav' });
+  tabs.forEach(tab => {
+    const btn = el('button', {
+      className: 'nav-btn' + (STATE.screen === tab.id ? ' active' : ''),
+      onClick: () => navigateTo(tab.id),
+    },
+      el('span', { className: 'icon' }, tab.icon),
+      tab.label
+    );
+    nav.appendChild(btn);
+  });
+  return nav;
+}
+
+// ================================================================
+//  SETUP SCREEN
+// ================================================================
+function renderSetupScreen() {
+  const wrap = el('div', { className: 'welcome-screen' });
+  wrap.innerHTML = `
+    <div class="welcome-logo">O'zbek</div>
+    <div class="welcome-sub">FSRS · Evidence-Based Language Learning</div>
+    <div class="welcome-desc">
+      A spaced repetition system built on the research we discussed. 
+      No gamification. Just science.
+    </div>
+    <div style="width:100%;max-width:360px;margin-top:16px;">
+      <div class="setup-field">
+        <label>Gemini API Key (Free Tier)</label>
+        <input 
+          type="password" 
+          class="settings-input" 
+          id="setup-api-key"
+          placeholder="AIza..."
+          style="margin-bottom:6px;"
+        />
+        <div class="setup-note">
+          Get your free key at <strong>aistudio.google.com</strong> → 
+          "Get API key". The free tier is more than sufficient for daily use.
+        </div>
+      </div>
+      <button class="btn btn-primary btn-full" id="setup-btn" style="margin-top:8px;">
+        Begin Learning →
+      </button>
+      <button class="btn btn-secondary btn-full" id="skip-btn" style="margin-top:8px;font-size:13px;">
+        Continue without AI features
+      </button>
+    </div>
+  `;
+  
+  setTimeout(() => {
+    document.getElementById('setup-btn')?.addEventListener('click', () => {
+      const key = document.getElementById('setup-api-key')?.value?.trim();
+      STATE.apiKey = key || '';
+      STATE._setupDone = true;
+      save();
+      navigateTo('home');
+    });
+    document.getElementById('skip-btn')?.addEventListener('click', () => {
+      STATE._setupDone = true;
+      save();
+      navigateTo('home');
+    });
+  }, 50);
+  
+  return wrap;
+}
+
+// ================================================================
+//  HOME SCREEN
+// ================================================================
+function renderHomeScreen() {
+  buildQueue();
+  const screen = el('div', { className: 'screen active', style: { flexDirection: 'column' } });
+  
+  // Header
+  const header = el('div', { className: 'header' });
+  header.innerHTML = `
+    <div>
+      <div class="header-title">O'zbek</div>
+      <div class="header-subtitle">Spaced Repetition</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;">
+      <div class="script-toggle">
+        <button class="script-btn ${!STATE.showCyrillic ? 'active' : ''}" id="latin-btn">Latin</button>
+        <button class="script-btn ${STATE.showCyrillic ? 'active' : ''}" id="cyr-btn">Кирилл</button>
+      </div>
+    </div>
+  `;
+  screen.appendChild(header);
+  
+  const content = el('div', { className: 'scroll-content' });
+
+  // Due count hero
+  const dueCount = STATE.reviewQueue.length;
+  const matureCount = getMatureCount();
+  const totalCards = Object.values(STATE.cards).filter(c => c.nodeId <= 4 && !(c.nodeId === 1 && c.type === 'pronunciation')).length;
+  
+  content.innerHTML = `
+    <div class="stats-grid">
+      <div class="stat-box" style="border-color:rgba(201,168,76,0.3)">
+        <div class="stat-number" style="color:${dueCount > 0 ? 'var(--terra2)' : 'var(--success)'}">${dueCount}</div>
+        <div class="stat-label">Due Today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">${matureCount}</div>
+        <div class="stat-label">Mature Cards</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">${STATE.reviewedToday || 0}</div>
+        <div class="stat-label">Reviewed Today</div>
+      </div>
+      <div class="stat-box">
+        <div class="stat-number">${Object.values(STATE.cards).filter(c => c.reps > 0).length}</div>
+        <div class="stat-label">Cards Seen</div>
+      </div>
+    </div>
+  `;
+
+  // Review button
+  if (dueCount > 0) {
+    const reviewBtn = el('button', {
+      className: 'btn btn-primary btn-full',
+      style: { fontSize: '18px', padding: '16px', marginBottom: '16px' },
+      onClick: () => navigateTo('review'),
+    }, `Review ${dueCount} card${dueCount !== 1 ? 's' : ''} →`);
+    content.appendChild(reviewBtn);
+  } else {
+    const doneEl = el('div', { className: 'card card-gold', style: { marginBottom: '16px', textAlign: 'center' } });
+    doneEl.innerHTML = `
+      <div style="font-size:32px;margin-bottom:8px;">✓</div>
+      <div style="font-family:var(--font-d);font-size:20px;color:var(--gold);margin-bottom:4px;">All caught up</div>
+      <div style="font-size:13px;color:var(--text2);">Come back tomorrow to keep your streak going</div>
+    `;
+    content.appendChild(doneEl);
+  }
+
+  // Current node progress
+  const currentNodeId = getCurrentNode();
+  const node = NODES.find(n => n.id === currentNodeId);
+  if (node) {
+    const stats = getNodeStats(node.id);
+    const nextNode = NODES.find(n => n.id === node.id + 1);
+    const progressEl = el('div', { className: 'card', style: { marginBottom: '16px' } });
+    progressEl.innerHTML = `
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span style="font-size:28px;">${node.icon}</span>
+        <div>
+          <div style="font-size:14px;font-weight:500;">Node ${node.id}: ${node.name}</div>
+          <div style="font-size:12px;color:var(--text2);">${node.description}</div>
+        </div>
+      </div>
+      <div style="display:flex;justify-content:space-between;font-size:12px;color:var(--text2);margin-bottom:6px;">
+        <span>${stats.mature} mature / ${stats.total} total</span>
+        ${nextNode ? `<span>Next node: ${nextNode.requiredMature} mature needed</span>` : ''}
+      </div>
+      <div class="progress-bar-wrap">
+        <div class="progress-bar-fill" style="width:${Math.min(100, stats.total ? (stats.mature/stats.total)*100 : 0)}%"></div>
+      </div>
+    `;
+    content.appendChild(progressEl);
+  }
+
+  // 90-day heatmap
+  const heatmapEl = el('div', { className: 'card' });
+  heatmapEl.innerHTML = `<div class="section-title">Activity — Last 91 Days</div>`;
+  const grid = el('div', { className: 'heatmap-grid' });
+  const history = STATE.reviewHistory || {};
+  for (let i = 90; i >= 0; i--) {
+    const d = new Date();
+    d.setDate(d.getDate() - i);
+    const key = d.toISOString().split('T')[0];
+    const count = history[key] || 0;
+    let lvl = '';
+    if (count >= 50) lvl = 'lvl4';
+    else if (count >= 30) lvl = 'lvl3';
+    else if (count >= 10) lvl = 'lvl2';
+    else if (count > 0) lvl = 'lvl1';
+    grid.appendChild(el('div', { className: `heatmap-day ${lvl}`, title: `${key}: ${count} reviews` }));
+  }
+  heatmapEl.appendChild(grid);
+  heatmapEl.innerHTML += `<div style="font-size:11px;color:var(--text3);margin-top:6px;text-align:right;">
+    Mature = reviewed card with interval ≥ 21 days
+  </div>`;
+  content.appendChild(heatmapEl);
+
+  screen.appendChild(content);
+
+  // Attach toggle events
+  setTimeout(() => {
+    document.getElementById('latin-btn')?.addEventListener('click', () => {
+      STATE.showCyrillic = false; save(); navigateTo('home');
+    });
+    document.getElementById('cyr-btn')?.addEventListener('click', () => {
+      STATE.showCyrillic = true; save(); navigateTo('home');
+    });
+  }, 50);
+
+  return screen;
+}
+
+// ================================================================
+//  REVIEW SCREEN
+// ================================================================
+function renderReviewScreen() {
+  const app = document.getElementById('app');
+  const existing = app.querySelector('#review-screen');
+  
+  const card = currentCard();
+  const total = STATE.reviewQueue.length;
+  const remaining = total - STATE.reviewIndex;
+
+  // Remove old review screen if re-rendering
+  if (existing) existing.remove();
+  // Remove old nav
+
+  // Build review screen
+  const screen = el('div', { className: 'screen active', id: 'review-screen', style: { flexDirection: 'column' } });
+
+  if (!card || remaining <= 0) {
+    // Done screen
+    const done = el('div', { style: { flex: '1', display: 'flex', flexDirection: 'column' } });
+    done.innerHTML = `
+      <div class="header">
+        <div>
+          <div class="header-title">Session Complete</div>
+          <div class="header-subtitle">Great work</div>
+        </div>
+        <button class="header-btn" onclick="navigateTo('home')">✕</button>
+      </div>
+      <div class="done-screen">
+        <div class="done-icon">🎯</div>
+        <div class="done-title">All done!</div>
+        <div class="done-sub">
+          ${STATE.sessionTotal} cards reviewed<br>
+          ${STATE.sessionCorrect} answered correctly<br>
+          ${getMatureCount()} mature cards total
+        </div>
+        <button class="btn btn-primary" style="margin-top:16px;" onclick="navigateTo('home')">Back to Home</button>
+      </div>
+    `;
+    screen.appendChild(done);
+    
+    return screen;
+  }
+
+  // Progress bar
+  const progress = el('div', { className: 'review-progress' });
+  progress.innerHTML = `
+    <div class="review-progress-bar">
+      <div class="review-progress-fill" style="width:${total > 0 ? ((STATE.reviewIndex / total) * 100) : 0}%"></div>
+    </div>
+    <div class="review-count">${remaining} left</div>
+    <button class="header-btn" style="margin-left:4px;" onclick="navigateTo('home')">✕</button>
+  `;
+  screen.appendChild(progress);
+
+  // Card area
+  const cardWrap = el('div', { className: 'flashcard-wrap', style: { flex: '1', display: 'flex', flexDirection: 'column' } });
+  
+  const flashcard = el('div', {
+    className: 'flashcard' + (STATE.cardRevealed ? ' revealed' : ''),
+    id: 'fc-main',
+    onClick: () => {
+      if (!STATE.cardRevealed) {
+        STATE.cardRevealed = true;
+        renderReviewScreen();
+      }
+    }
+  });
+
+  // Type & node badges
+  flashcard.appendChild(el('div', { className: 'card-type-badge' }, card.type));
+  flashcard.appendChild(el('div', { className: 'card-node-badge' }, `Node ${card.nodeId}`));
+
+  // State badge
+  const stateBadge = el('span', { 
+    className: `tag tag-${card.state}`,
+    style: { position: 'absolute', bottom: '10px', right: '10px' }
+  }, card.state);
+  flashcard.appendChild(stateBadge);
+
+  // Front
+  const frontText = el('div', { className: 'card-front-text' }, card.front);
+  const frontRu = el('div', { className: 'card-front-ru' }, card.frontRu);
+  flashcard.appendChild(frontText);
+  flashcard.appendChild(frontRu);
+
+  if (!STATE.cardRevealed) {
+    flashcard.appendChild(el('div', { className: 'card-reveal-hint' }, 'tap to reveal'));
+  }
+
+  // Back (shown after reveal)
+  if (STATE.cardRevealed) {
+    const back = el('div', { className: 'card-back visible' });
+    
+    const uzbekText = STATE.showCyrillic && card.backCyr ? card.backCyr : card.back;
+    const altText = STATE.showCyrillic && card.backCyr ? card.back : (card.backCyr || '');
+    
+    back.appendChild(el('div', { className: 'card-uzbek' }, uzbekText));
+    if (altText) {
+      back.appendChild(el('div', { className: 'card-cyrillic' }, altText));
+    }
+    
+    const ttsBtn = el('button', {
+      className: 'tts-btn',
+      id: 'tts-btn',
+      onClick: (e) => {
+        e.stopPropagation();
+        const btn = document.getElementById('tts-btn');
+        btn.classList.add('speaking');
+        btn.textContent = '🔊 Speaking...';
+        speak(card.back);
+        setTimeout(() => {
+          btn.classList.remove('speaking');
+          btn.textContent = '🔊 Listen';
+        }, 2000);
+      }
+    }, '🔊 Listen');
+    back.appendChild(ttsBtn);
+    
+    if (card.notes) {
+      back.appendChild(el('div', { className: 'card-notes' }, card.notes));
+    }
+    
+    flashcard.appendChild(back);
+  }
+
+  cardWrap.appendChild(flashcard);
+
+  // Feynman panel (if 3+ consecutive failures)
+  if (STATE.cardRevealed && (card.consecutiveFailures || 0) >= 3) {
+    const feynPanel = el('div', { className: 'feynman-panel visible', id: 'feynman-panel' });
+    feynPanel.innerHTML = `
+      <div class="feynman-header">⚠️ Comprehension Flag — Failed 3×</div>
+      <div class="feynman-content" id="feynman-content">
+        <div class="feynman-loading">
+          <div class="dot-wrap"><div class="dot-flashing"></div></div>
+          Generating explanation...
+        </div>
+      </div>
+    `;
+    cardWrap.appendChild(feynPanel);
+    
+    // Async load explanation
+    if (STATE.apiKey) {
+      getFeynmanExplanation(card).then(explanation => {
+        const el2 = document.getElementById('feynman-content');
+        if (el2) el2.textContent = explanation;
+      });
+    } else {
+      setTimeout(() => {
+        const el2 = document.getElementById('feynman-content');
+        if (el2) el2.innerHTML = `<em style="color:var(--text2)">Add a Gemini API key in Settings to get AI explanations for failed cards.</em>`;
+      }, 100);
+    }
+  }
+
+  screen.appendChild(cardWrap);
+
+  // Rating buttons
+  if (STATE.cardRevealed) {
+    const actionsWrap = el('div', { className: 'review-actions' });
+    const intervals = FSRS.previewIntervals(STATE.cards[card.id]);
+    const ratings = [
+      { rating: 1, label: 'Again', cls: 'btn-again', interval: intervals[0] },
+      { rating: 2, label: 'Hard', cls: 'btn-hard', interval: intervals[1] },
+      { rating: 3, label: 'Good', cls: 'btn-good', interval: intervals[2] },
+      { rating: 4, label: 'Easy', cls: 'btn-easy', interval: intervals[3] },
+    ];
+    const grid = el('div', { className: 'rating-grid' });
+    ratings.forEach(r => {
+      const btn = el('button', {
+        className: `rating-btn ${r.cls}`,
+        onClick: () => submitRating(r.rating),
+      },
+        r.label,
+        el('span', { className: 'interval' }, r.interval)
+      );
+      grid.appendChild(btn);
+    });
+    actionsWrap.appendChild(grid);
+    screen.appendChild(actionsWrap);
+  }
+
+  return screen;
+}
+
+// ================================================================
+//  SKILL TREE SCREEN
+// ================================================================
+function renderTreeScreen() {
+  const screen = el('div', { className: 'screen active', style: { flexDirection: 'column' } });
+  
+  screen.innerHTML = `
+    <div class="header">
+      <div>
+        <div class="header-title">Skill Tree</div>
+        <div class="header-subtitle">Your learning path</div>
+      </div>
+    </div>
+  `;
+  
+  const content = el('div', { className: 'scroll-content' });
+  const matureCount = getMatureCount();
+  
+  content.innerHTML = `<div style="font-size:13px;color:var(--text2);margin-bottom:12px;">
+    <strong style="color:var(--gold)">${matureCount}</strong> mature cards total. 
+    Cards unlock new nodes when they reach 21+ day intervals.
+  </div>`;
+
+  NODES.forEach(node => {
+    const unlocked = isNodeUnlocked(node.id);
+    const stats = getNodeStats(node.id);
+    const isConvo = node.id === 8;
+    const nextNode = NODES.find(n => n.id === node.id + 1);
+    
+    let statusClass = 'locked';
+    if (unlocked) {
+      statusClass = stats.mature >= (stats.total * 0.8) ? 'completed' : 'current';
+    }
+    
+    const item = el('div', { className: `node-item ${statusClass}` });
+    item.innerHTML = `
+      <div class="node-icon">${node.icon}</div>
+      <div class="node-info">
+        <div class="node-name">Node ${node.id}: ${node.name}</div>
+        <div class="node-desc">${node.description}</div>
+        ${unlocked ? `
+          <div class="progress-bar-wrap" style="margin-top:6px;">
+            <div class="progress-bar-fill" style="width:${stats.total ? Math.min(100, (stats.mature/stats.total)*100) : 0}%"></div>
+          </div>
+          <div class="node-progress-text" style="margin-top:4px;">
+            ${stats.mature} mature / ${stats.reviewed} seen / ${stats.total} total
+          </div>
+        ` : `
+          <div style="font-size:12px;color:var(--text3);margin-top:4px;">
+            🔒 Requires ${node.requiredMature} mature cards (you have ${matureCount})
+          </div>
+        `}
+      </div>
+    `;
+    
+    content.appendChild(item);
+    
+    // Connector line
+    if (node.id < 8) {
+      const line = el('div', { style: { width: '2px', height: '16px', background: unlocked && isNodeUnlocked(node.id+1) ? 'rgba(201,168,76,0.4)' : 'var(--border)', margin: '0 auto', borderRadius: '1px' } });
+      content.appendChild(line);
+    }
+  });
+
+  // Pronunciation reference link
+  const pronCard = el('div', { 
+    className: 'card',
+    style: { marginTop: '16px', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' },
+    onClick: () => renderPronunciationOverlay(),
+  });
+  pronCard.innerHTML = `
+    <span style="font-size:28px;">🔤</span>
+    <div>
+      <div style="font-size:14px;font-weight:500;">Pronunciation Reference</div>
+      <div style="font-size:12px;color:var(--text2);">Full guide to Uzbek sounds — including Q, GH, KH</div>
+    </div>
+    <span style="margin-left:auto;color:var(--text3);">→</span>
+  `;
+  content.appendChild(pronCard);
+
+  screen.appendChild(content);
+  return screen;
+}
+
+// ================================================================
+//  PRONUNCIATION OVERLAY
+// ================================================================
+function renderPronunciationOverlay() {
+  const overlay = el('div', {
+    style: {
+      position: 'fixed', inset: '0', background: 'rgba(0,0,0,0.85)',
+      zIndex: '200', display: 'flex', flexDirection: 'column',
+      maxWidth: '480px', margin: '0 auto',
+    }
+  });
+  
+  overlay.innerHTML = `
+    <div class="header" style="background:var(--bg2);">
+      <div>
+        <div class="header-title">Pronunciation Guide</div>
+        <div class="header-subtitle">From Öztopçu (UC Berkeley)</div>
+      </div>
+      <button class="header-btn" id="close-pron">✕</button>
+    </div>
+    <div class="scroll-content" style="padding-bottom:24px;">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:12px;">
+        Uzbek Latin script is largely phonetic. These are the sounds that differ from English.
+      </div>
+      <table class="pron-table">
+        <thead><tr><th>Letter</th><th>Sound</th><th>Example</th></tr></thead>
+        <tbody>
+          <tr><td class="pron-letter">q</td><td class="pron-en">Uvular stop — no English equivalent. Back-of-throat 'k'</td><td class="pron-example">qiz (girl), qorin (stomach)</td></tr>
+          <tr><td class="pron-letter">g'</td><td class="pron-en">Voiced velar spirant — soft gargling sound</td><td class="pron-example">o'g'il (son), g'oya (idea)</td></tr>
+          <tr><td class="pron-letter">x</td><td class="pron-en">Like Scottish 'loch' — ch in Bach</td><td class="pron-example">xona (room), xotin (wife)</td></tr>
+          <tr><td class="pron-letter">o'</td><td class="pron-en">Like 'oo' in 'book' — rounded back vowel</td><td class="pron-example">o'n (10), o'q (bullet/arrow)</td></tr>
+          <tr><td class="pron-letter">a</td><td class="pron-en">Like 'a' in 'father'</td><td class="pron-example">bola (child), arava (cart)</td></tr>
+          <tr><td class="pron-letter">e</td><td class="pron-en">Like 'e' in 'pen'</td><td class="pron-example">men (I), kel (come)</td></tr>
+          <tr><td class="pron-letter">i</td><td class="pron-en">Like 'ee' in 'bit' (short)</td><td class="pron-example">kim (who), isim (name)</td></tr>
+          <tr><td class="pron-letter">u</td><td class="pron-en">Like 'u' in 'put'</td><td class="pron-example">u (he/she), uy (house)</td></tr>
+          <tr><td class="pron-letter">sh</td><td class="pron-en">Like 'sh' in 'sheep'</td><td class="pron-example">bosh (head), shahar (city)</td></tr>
+          <tr><td class="pron-letter">ch</td><td class="pron-en">Like 'ch' in 'chair'</td><td class="pron-example">choy (tea), chap (left)</td></tr>
+          <tr><td class="pron-letter">j</td><td class="pron-en">Like 'j' in 'jam'</td><td class="pron-example">joy (place), juda (very)</td></tr>
+          <tr><td class="pron-letter">ng</td><td class="pron-en">Like 'ng' in 'song' — can appear at word start</td><td class="pron-example">keng (wide)</td></tr>
+          <tr><td class="pron-letter">ts</td><td class="pron-en">Like 'ts' in 'sits'</td><td class="pron-example">tsirk (circus)</td></tr>
+        </tbody>
+      </table>
+      <div style="margin-top:16px;padding:12px;background:var(--bg3);border-radius:var(--r2);font-size:13px;color:var(--text2);line-height:1.6;">
+        <strong style="color:var(--gold);">Key rule:</strong> Uzbek is largely phonetic — words are pronounced as spelled. 
+        Stress is usually on the last syllable: ra<strong>H</strong>mat, xu<strong>SHVA</strong>qt.
+        Unlike Russian, there is NO vowel reduction.
+      </div>
+    </div>
+  `;
+  
+  document.getElementById('app').appendChild(overlay);
+  
+  setTimeout(() => {
+    document.getElementById('close-pron')?.addEventListener('click', () => overlay.remove());
+  }, 50);
+}
+
+// ================================================================
+//  CONVERSATION SCREEN
+// ================================================================
+function renderConvoScreen() {
+  const screen = el('div', { className: 'screen active', style: { flexDirection: 'column', height: '100%' } });
+  
+  screen.innerHTML = `
+    <div class="header">
+      <div>
+        <div class="header-title">Conversation</div>
+        <div class="header-subtitle">AI Practice Partner</div>
+      </div>
+    </div>
+  `;
+
+  if (!STATE.apiKey) {
+    const notice = el('div', { className: 'empty-state' });
+    notice.innerHTML = `
+      <div class="empty-icon">💬</div>
+      <div class="empty-title">Add API Key</div>
+      <div class="empty-sub">Add your free Gemini API key in Settings to enable AI conversation practice.</div>
+      <button class="btn btn-primary" onclick="navigateTo('settings')">Go to Settings</button>
+    `;
+    screen.appendChild(notice);
+    return screen;
+  }
+
+  const currentNodeId = getCurrentNode();
+  
+  // Scenario selector
+  const scenarios = [
+    { id: 'free', label: 'Free conversation', icon: '🗣️' },
+    { id: 'hotel', label: 'At the hotel', icon: '🏨' },
+    { id: 'taxi', label: 'In a taxi', icon: '🚕' },
+    { id: 'restaurant', label: 'At a restaurant', icon: '🍽️' },
+    { id: 'shopping', label: 'At the bazaar', icon: '🛍️' },
+    { id: 'doctor', label: 'At the doctor', icon: '🏥' },
+  ];
+
+  if (!STATE.activeScenario) {
+    const scenarioScreen = el('div', { className: 'scroll-content' });
+    scenarioScreen.innerHTML = `
+      <div style="font-size:14px;color:var(--text2);margin-bottom:16px;line-height:1.5;">
+        Practice real conversations. The AI will respond in Uzbek and correct your mistakes gently.
+        Your Russian fluency is your advantage — feel free to mix languages when stuck.
+      </div>
+    `;
+    scenarios.forEach(s => {
+      const btn = el('div', {
+        className: 'card',
+        style: { cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '12px' },
+        onClick: () => {
+          STATE.activeScenario = s.id;
+          STATE.chatHistory = [];
+          // Send opening message
+          startConversation(s.id).then(() => {
+            navigateTo('convo');
+          });
+        },
+      });
+      btn.innerHTML = `
+        <span style="font-size:28px;">${s.icon}</span>
+        <div style="font-size:15px;">${s.label}</div>
+        <span style="margin-left:auto;color:var(--text3);">→</span>
+      `;
+      scenarioScreen.appendChild(btn);
+    });
+    screen.appendChild(scenarioScreen);
+    return screen;
+  }
+
+  // Chat interface
+  const msgs = el('div', { className: 'chat-messages', id: 'chat-msgs' });
+  
+  STATE.chatHistory.forEach(msg => {
+    const m = el('div', { className: `msg msg-${msg.role === 'user' ? 'user' : 'ai'}` });
+    m.innerHTML = `
+      <div class="msg-label">${msg.role === 'user' ? 'You' : 'O\'zbek AI'}</div>
+      ${msg.content}
+    `;
+    msgs.appendChild(m);
+  });
+  
+  screen.appendChild(msgs);
+
+  // Input
+  const inputWrap = el('div', { className: 'chat-input-wrap' });
+  inputWrap.innerHTML = `
+    <textarea class="chat-input" id="chat-input" placeholder="Type in Uzbek, English, or Russian..." rows="1"></textarea>
+    <button class="chat-send-btn" id="chat-send">→</button>
+  `;
+  screen.appendChild(inputWrap);
+
+  setTimeout(() => {
+    const msgEl = document.getElementById('chat-msgs');
+    if (msgEl) msgEl.scrollTop = msgEl.scrollHeight;
+    
+    document.getElementById('chat-send')?.addEventListener('click', sendChatMessage);
+    document.getElementById('chat-input')?.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+      }
+    });
+    
+    // Back button option
+    const backBtn = document.createElement('button');
+    backBtn.className = 'btn btn-secondary';
+    backBtn.style.cssText = 'position:absolute;top:12px;right:60px;font-size:12px;padding:6px 10px;';
+    backBtn.textContent = 'New scenario';
+    backBtn.onclick = () => {
+      STATE.activeScenario = null;
+      STATE.chatHistory = [];
+      navigateTo('convo');
+    };
+    screen.querySelector('.header')?.appendChild(backBtn);
+  }, 50);
+
+  return screen;
+}
+
+async function startConversation(scenarioId) {
+  const scenarios = {
+    free: 'Have a friendly conversation in Uzbek. Start with a casual greeting.',
+    hotel: "You are a hotel receptionist in Tashkent. Greet the guest and ask how you can help. The guest is checking in.",
+    taxi: 'You are a taxi driver in Tashkent. The passenger has just gotten in. Greet them and ask where they want to go.',
+    restaurant: 'You are a waiter at an Uzbek restaurant in Samarkand. Welcome the guest and offer them the menu.',
+    shopping: 'You are a vendor at the Chorsu bazaar in Tashkent selling textiles. Greet a customer who has approached your stall.',
+    doctor: 'You are a doctor at a clinic in Tashkent. Greet the patient and ask what brings them in today.',
+  };
+
+  const systemPrompt = `You are an Uzbek conversation practice partner. Rules:
+1. Respond primarily in Uzbek (Latin script)
+2. Keep responses SHORT (1-3 sentences) so the learner can practice
+3. If the user writes in English or Russian, gently respond in Uzbek but add a brief English note in brackets [like this]
+4. If the user makes a grammatical error, correct it gently at the end: [Note: correct form is...]
+5. The scenario: ${scenarios[scenarioId] || 'Have a friendly conversation in Uzbek.'}
+6. Remember: the learner speaks Russian fluently, which helps with loanwords
+
+Start the conversation with your opening line.`;
+
+  const opening = await callGemini(systemPrompt, '[Begin the scenario]', []);
+  STATE.chatHistory = [
+    { role: 'system', content: systemPrompt },
+    { role: 'assistant', content: opening }
+  ];
+}
+
+async function sendChatMessage() {
+  const input = document.getElementById('chat-input');
+  const sendBtn = document.getElementById('chat-send');
+  const text = input?.value?.trim();
+  if (!text) return;
+  
+  input.value = '';
+  sendBtn.disabled = true;
+  
+  STATE.chatHistory.push({ role: 'user', content: text });
+  
+  // Add to UI immediately
+  const msgs = document.getElementById('chat-msgs');
+  if (msgs) {
+    const userMsg = el('div', { className: 'msg msg-user' });
+    userMsg.innerHTML = `<div class="msg-label">You</div>${text}`;
+    msgs.appendChild(userMsg);
+    
+    const loadingMsg = el('div', { className: 'msg msg-ai', id: 'loading-msg' });
+    loadingMsg.innerHTML = `<div class="msg-label">O'zbek AI</div><em style="color:var(--text3)">typing...</em>`;
+    msgs.appendChild(loadingMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  const systemMsg = STATE.chatHistory.find(m => m.role === 'system');
+  const history = STATE.chatHistory.filter(m => m.role !== 'system');
+  
+  const response = await callGemini(systemMsg?.content || '', text, history.slice(-8));
+  
+  STATE.chatHistory.push({ role: 'assistant', content: response });
+  
+  // Remove loading, add real response
+  document.getElementById('loading-msg')?.remove();
+  if (msgs) {
+    const aiMsg = el('div', { className: 'msg msg-ai' });
+    aiMsg.innerHTML = `<div class="msg-label">O'zbek AI</div>${response}`;
+    msgs.appendChild(aiMsg);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+  
+  sendBtn.disabled = false;
+  input.focus();
+}
+
+// ================================================================
+//  SETTINGS SCREEN
+// ================================================================
+function renderSettingsScreen() {
+  const screen = el('div', { className: 'screen active', style: { flexDirection: 'column' } });
+  
+  screen.innerHTML = `
+    <div class="header">
+      <div>
+        <div class="header-title">Settings</div>
+        <div class="header-subtitle">Configure your experience</div>
+      </div>
+    </div>
+  `;
+  
+  const content = el('div', { className: 'scroll-content' });
+  content.innerHTML = `
+    <div class="settings-group">
+      <div class="settings-label">Gemini API Key</div>
+      <input type="password" class="settings-input" id="api-key-input" value="${STATE.apiKey}" placeholder="AIza...">
+      <div style="font-size:12px;color:var(--text3);margin-top:6px;line-height:1.5;">
+        Free tier at <strong>aistudio.google.com</strong>. Powers AI explanations and conversation mode.
+        15 requests/min, 1M tokens/day — more than enough.
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-label">Display Script</div>
+      <div class="settings-row">
+        <div>
+          <div class="settings-row-label">Show Cyrillic</div>
+          <div class="settings-row-sub">Display Uzbek in Cyrillic script (in addition to Latin)</div>
+        </div>
+        <button class="toggle ${STATE.showCyrillic ? 'on' : ''}" id="cyr-toggle"></button>
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-label">Data Management</div>
+      <button class="btn btn-secondary btn-full" id="export-btn" style="margin-bottom:8px;">
+        📤 Export Backup (JSON)
+      </button>
+      <label class="btn btn-secondary btn-full" style="cursor:pointer;">
+        📥 Import Backup
+        <input type="file" accept=".json" id="import-input" style="display:none">
+      </label>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-label">About</div>
+      <div class="card" style="font-size:13px;color:var(--text2);line-height:1.6;">
+        <strong style="color:var(--text)">O'zbek — FSRS Language App</strong><br>
+        Built on FSRS-5 (Free Spaced Repetition Scheduler).<br>
+        Seed deck sourced from: Öztopçu's Colloquial Uzbek (UC Berkeley), 
+        Peace Corps Uzbek Competencies, JBLM 200-Hour Familiarization Course.<br><br>
+        No ads. No gamification. No subscriptions. Just the research.
+      </div>
+    </div>
+
+    <div class="settings-group">
+      <div class="settings-label">Danger Zone</div>
+      <button class="btn btn-danger btn-full" id="reset-btn">
+        ⚠️ Reset All Progress
+      </button>
+    </div>
+  `;
+
+  screen.appendChild(content);
+
+  setTimeout(() => {
+    document.getElementById('api-key-input')?.addEventListener('change', (e) => {
+      STATE.apiKey = e.target.value.trim();
+      save();
+      showToast('API key saved');
+    });
+    
+    document.getElementById('cyr-toggle')?.addEventListener('click', (e) => {
+      STATE.showCyrillic = !STATE.showCyrillic;
+      e.target.classList.toggle('on');
+      save();
+      showToast(STATE.showCyrillic ? 'Cyrillic enabled' : 'Cyrillic disabled');
+    });
+    
+    document.getElementById('export-btn')?.addEventListener('click', exportData);
+    
+    document.getElementById('import-input')?.addEventListener('change', (e) => {
+      if (e.target.files[0]) importData(e.target.files[0]);
+    });
+    
+    document.getElementById('reset-btn')?.addEventListener('click', () => {
+      if (confirm('This will delete ALL your progress and card history. Are you sure?')) {
+        localStorage.clear();
+        location.reload();
+      }
+    });
+  }, 50);
+
+  return screen;
+}
+
+// ================================================================
+//  INIT
+// ================================================================
+function init() {
+  // Register service worker
+  if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('sw.js').catch(e => console.log('SW:', e));
+  }
+  
+  // Load saved state
+  const loaded = load();
+  if (!loaded) {
+    STATE._setupDone = false;
+  } else {
+    STATE._setupDone = true;
+  }
+  
+  // Initialise cards from seed deck
+  initCards();
+  
+  // Render
+history.replaceState({ screen: 'home' }, '');
+  render();
+}
+
+init();
+</script>
+</body>
+</html>
